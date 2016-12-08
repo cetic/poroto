@@ -1,0 +1,3 @@
+[submodule "pycparser_src"]
+	path = pycparser_src
+	url = ../pycparser.git

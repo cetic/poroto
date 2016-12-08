@@ -1,0 +1,3 @@
+SDK=none
+DEVICE_VENDOR=sim
+DESIGNER=ghdl

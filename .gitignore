@@ -1,0 +1,10 @@
+/*.zip
+*.pyc
+gen
+project
+/pycparser-2.14-py2.7.egg-info/
+.library_mapping.xml
+.settings
+*.gtkw
+.project
+.pydevproject

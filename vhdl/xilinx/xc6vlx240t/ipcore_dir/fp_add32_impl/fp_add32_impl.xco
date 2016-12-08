@@ -1,0 +1,53 @@
+##############################################################
+#
+# PlanAhead 14.7
+# Date: Thu Sep 22 13:44:18 2016
+
+#
+##############################################################
+#
+#  This file contains the customisation parameters for a
+#  Xilinx IP GUI. It is strongly recommended
+#  that you do not manually alter this file as it may cause
+#  unexpected and unsupported behavior.
+#
+##############################################################
+# BEGIN Project Options
+SET devicefamily=virtex6
+SET device=xc6vlx240t
+SET package=ff1759
+SET speedgrade=-1
+SET verilogsim=false
+SET vhdlsim=true
+# END Project Options
+# BEGIN Select
+SELECT Floating-point xilinx.com:ip:floating_point:5.0
+# END Select
+# BEGIN Parameters
+CSET component_name=fp_add32_impl
+CSET operation_type=Add_Subtract
+CSET add_sub_value=Add
+CSET c_compare_operation=Programmable
+CSET a_precision_type=Single
+CSET c_a_exponent_width=8
+CSET c_a_fraction_width=24
+CSET result_precision_type=Single
+CSET c_result_exponent_width=8
+CSET c_result_fraction_width=24
+CSET c_optimization=Speed_Optimized
+CSET c_mult_usage=Full_Usage
+CSET maximum_latency=false
+CSET c_latency=11
+CSET c_rate=1
+CSET c_speed=Maximum_speed
+CSET c_has_operation_nd=true
+CSET c_has_operation_rfd=true
+CSET c_has_rdy=true
+CSET c_has_sclr=true
+CSET c_has_ce=true
+CSET c_has_underflow=false
+CSET c_has_overflow=false
+CSET c_has_invalid_op=false
+CSET c_has_divide_by_zero=false
+# END Parameters
+GENERATE

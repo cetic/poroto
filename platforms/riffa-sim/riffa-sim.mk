@@ -1,0 +1,4 @@
+SDK=riffa
+PLATFORM_VENDOR=sim
+DEVICE_VENDOR=sim
+DESIGNER=ghdl

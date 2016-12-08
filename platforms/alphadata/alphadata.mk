@@ -1,0 +1,8 @@
+SDK=alphadata
+PLATFORM_VENDOR=alphadata
+PLATFORM?=admxrc6t1
+PLATFORM_TARGET?=xc6vlx240t-noddr
+DEVICE_VENDOR=xilinx
+DEVICE?=xc6vlx240t
+DESIGNER?=pa
+DESIGNER_VERSION?=14.4

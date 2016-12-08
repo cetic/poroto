@@ -1,0 +1,7 @@
+The POROTO Toochain depends on the following items :
+
+- The Python interpreter (version 2.7 or above)
+- PyCParser library (Included in this delivery)
+- ROCCC compiler (Version 0.7.6)
+
+To be able to generate the VHDL code, you also need a platform dependent package.
