@@ -1,6 +1,6 @@
 import os
-from poroto.common import load_template
-from poroto.config import gen_path, c_path
+from .common import load_template
+from .config import gen_path, c_path
 from pycparser import c_ast
 
 class CTestBench:

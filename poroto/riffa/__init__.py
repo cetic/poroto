@@ -5,7 +5,7 @@ from poroto.config import src_path, ipcore_path
 from c_wrapper import CWrapper
 from vhdl_wrapper import VhdlWrapper
 from vhdl_tb import VhdlTestBench
-from c_tb import CTestBench
+from ..c_tb import CTestBench
 from .streams import RocccBramInStream, RocccBramOutStream, BramStream, BramGetStream, BramSetStream
 from .bram_wrapper import BramMemoryWrapper
 from ..port import Port

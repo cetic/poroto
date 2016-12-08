@@ -9,6 +9,48 @@ class CWrapper:
         self.streams_map = streams_map
         self.debug = debug
 
+    def def_input_registers(self, registers):
+        count = 1
+        for (i, register) in enumerate(registers):
+            if register.short_name is not "rst" and register.short_name is not "stall":
+                count = count + 1
+        print >> self.code, "\tuint32_t input_registers[%d];" % count
+
+    def write_input_registers(self, registers):
+        count = 1
+        for (i, register) in enumerate(registers):
+            if register.short_name is not "rst" and register.short_name is not "stall":
+                count = count + 1
+        offset = 0
+        print >> self.code, "\tinput_registers[%d] = 0;" % offset        
+        offset += 1
+        for (i, register) in enumerate(registers):
+            if register.short_name is not "rst" and register.short_name is not "stall":
+                print >> self.code, "\tinput_registers[%d] = %s;" % (offset, register.short_name)        
+                offset += 1
+        print >> self.code, "\tporoto_fpga_write_vector(0, sizeof(input_registers), input_registers);"
+
+    def def_output_registers(self, registers):
+        count = 0
+        for (i, register) in enumerate(registers):
+            if register.short_name is not "rst" and register.short_name is not "stall":
+                count = count + 1
+        print >> self.code, "\tuint32_t output_registers[%d];" % count
+
+    def read_output_registers(self, registers):
+        count = 0
+        for (i, register) in enumerate(registers):
+            if register.short_name is not "rst" and register.short_name is not "stall":
+                count = count + 1
+        print >> self.code, "\tporoto_fpga_read_vector(0, sizeof(output_registers), output_registers);"
+        offset = 0
+        print >> self.code, "\t//resultReady = output_registers[%d];" % offset        
+        offset += 1
+        for (i, register) in enumerate(registers):
+            if register.short_name is not "resultReady":
+                print >> self.code, "\t%s = output_registers[%d];" % (register.short_name, offset)        
+                offset += 1
+
     def wrapFunction(self, instance):
         if self.debug: print "Adding C wrapper for function %s" % instance.name
         generator = c_generator.CGenerator()
@@ -20,35 +62,25 @@ class CWrapper:
         print >> self.code, '{'
         for stream in instance.streams:
             print >> self.code, "\tuint32_t %s_size = %s;" % (stream.name, stream.size)
-        for register in self.registers_map.block_in_registers[instance.name]:
-            if register.short_name == 'rst':
-                print >> self.code, "\tpFpgaSpace[0x%x] = 1; //reset block" % (register.offset/4)
+        self.def_input_registers(self.registers_map.block_in_registers[instance.name])
+        self.def_output_registers(self.registers_map.block_out_registers[instance.name])
         for stream in instance.streams:
             if stream.in_stream:
-                print >> self.code, "\tfpga_write_vector(%d, (%s)*4, %s);" % (stream.memory.index, stream.size, stream.name)
-        for register in self.registers_map.block_in_registers[instance.name]:
-            if register.short_name == 'rst':
-                pass
-            elif register.short_name == 'stall':
-                pass
-            else:
-                print >> self.code, "\tpFpgaSpace[0x%x] = (uint32_t)%s;" % (register.offset/4, register.short_name)
-            #print >> self.code, "\t//pFpgaSpace[0x%x] = 1; //set inputReady <= 1" % (offset/4)
-        for register in self.registers_map.block_out_registers[instance.name]:
-            if register.short_name == 'resultReady':
-                print >> self.code, "\twhile (pFpgaSpace[0x%x] == 0) ; //Wait for resultReady" % (register.offset/4)
-            else:
-                print >> self.code, "\t%s = pFpgaSpace[0x%x];" % (register.short_name, register.offset/4)
+                print >> self.code, "\tporoto_fpga_write_vector(%d, (%s)*4, %s);" % (stream.memory.index+1, stream.size, stream.name)
+
+        self.write_input_registers(self.registers_map.block_in_registers[instance.name])
+        self.read_output_registers(self.registers_map.block_out_registers[instance.name])
+
         for stream in instance.streams:
             if stream.out_stream:
-                print >> self.code, "\tfpga_read_vector(%d, (%s)*4, %s);" % (stream.memory.index, stream.size, stream.name)
+                print >> self.code, "\tporoto_fpga_read_vector(%d, (%s)*4, %s);" % (stream.memory.index+1, stream.size, stream.name)
         print >> self.code, '}'
 
     def generate(self):
         self.header = open(os.path.join(gen_path, 'c', 'c_wrapper.h'), 'w' )
         self.code = open(os.path.join(gen_path, 'c', 'c_wrapper.cpp'), 'w' )
         print >> self.code, "#include <inttypes.h>"
-        print >> self.code, '#include "fpga.h"'
+        print >> self.code, '#include "poroto.h"'
         for function in self.functions:
             self.wrapFunction(function)
         self.code.close()
