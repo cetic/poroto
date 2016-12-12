@@ -202,8 +202,8 @@ class InternalArrayWrapperInstance(Instance):
         self.data_sign = data_sign
 
     def generate(self, designer):
-        array_converter = InternalBramWrapperGenerator(designer, self.debug)
-        array_converter.generate(self)
+        array_converter = InternalBramWrapperGenerator(self.debug)
+        array_converter.generate(self, designer)
         self.converter.add_ip(self.name, array_converter.latency,  [('address', self.address_size, 'int')], [('value', self.data_size, 'int')])
 
 class ArrayPragmaHandler(PragmaHandler):

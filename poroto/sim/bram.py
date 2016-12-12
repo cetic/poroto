@@ -5,6 +5,7 @@ from pycparser import c_ast
 from ..common import get_bit_width
 import string
 import os
+from ..template import FileTemplate
 
 class BramMemory(Memory):
     def get_component(self):
@@ -45,27 +46,21 @@ class BramMemory(Memory):
 class BromMemory(Memory):
     def __init__(self, name, data_type, size, init, debug):
         Memory.__init__(self, name, data_type, size, init, debug)
-        self.brom_template = load_template('brom.vhdl')
+        self.brom_template = FileTemplate('brom.vhdl')
 
     def generate(self, designer):
-        out = open(os.path.join(gen_path, 'vhdl', "%s_brom.vhdl" % self.name), 'w' )
-        for line in self.brom_template:
-            if '%%%NAME%%%' in line:
-                line = string.replace(line, '%%%NAME%%%', self.name + "_brom")
-            if '%%%SIZE%%%' in line:
-                line = string.replace(line, '%%%SIZE%%%', str(self.size))
-            if '%%%ADDR_LEN%%%' in line:
-                line = string.replace(line, '%%%ADDR_LEN%%%', str(get_bit_width(self.size)))
-            if '%%%DATA_SIZE%%%' in line:
-                line = string.replace(line, '%%%DATA_SIZE%%%', str(self.data_size))
-            if '%%%DATA%%%' in line:
-                for (i, value) in enumerate(reversed(self.init.exprs)):
-                    if isinstance(value, c_ast.UnaryOp):
-                        value = "-%s" % value.expr.value
-                    else:
-                        value = value.value
-                    print >> out, "\t  std_logic_vector(to_unsigned(%s, 32))%s" % (value, ',' if i < len(self.init.exprs) - 1 else '')
-                continue
-            print >> out, line,
+        data=[]
+        for (i, value) in enumerate(reversed(self.init.exprs)):
+            if isinstance(value, c_ast.UnaryOp):
+                value = "-%s" % value.expr.value
+            else:
+                value = value.value
+            data.append("\t  std_logic_vector(to_unsigned(%s, 32))%s" % (value, ',' if i < len(self.init.exprs) - 1 else ''))
+        keys={ 'NAME': self.name + "_brom",
+               'SIZE': str(self.size),
+               'ADDR_LEN': str(get_bit_width(self.size)),
+               'DATA_SIZE': str(self.data_size),
+               'DATA': data}
+        self.template.set_keys(keys)
+        self.template.generate(os.path.join(gen_path, 'vhdl', "%s_brom.vhdl" % self.name))
         designer.add_file(gen_path, "%s_brom.vhdl" % self.name)
-        out.close()

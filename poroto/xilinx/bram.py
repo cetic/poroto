@@ -3,65 +3,42 @@ import os
 from pycparser import c_ast
 import math
 
-from poroto.common import load_template, mkdir_safe
+from poroto.common import mkdir_safe
 from poroto.config import gen_path, ipcore_path
 from poroto.memory import Memory
+from poroto.template import FileTemplate
 
 class BromMemory(Memory):
     latency = 2
-    def __init__(self, designer, debug):
-        self.designer = designer
-        self.debug = debug
-        self.xco_template = load_template('brom.xco')
-        self.wrapper_template = load_template('brom_wrapper.vhdl')
+    def __init__(self, name, data_type, size, init, debug):
+        Memory.__init__(self, name, data_type, size, init, debug)
+        self.xco_template = FileTemplate('brom.xco')
 
-    def generateCoe(self, memory):
-        out = open(os.path.join(gen_path, ipcore_path, "%s_brom" % memory.name, "%s.coe" % memory.name), 'w' )
+    def generateCoe(self):
+        out = open(os.path.join(gen_path, ipcore_path, "%s_brom" % self.name, "%s.coe" % self.name), 'w' )
         print >> out, "MEMORY_INITIALIZATION_RADIX=10;"
         print >> out, "MEMORY_INITIALIZATION_VECTOR="
-        for i in memory.init.exprs:
+        for i in self.init.exprs:
             if isinstance(i, c_ast.UnaryOp):
                 print >> out, "-%s," % i.expr.value
             else:
                 print >> out, "%s," % i.value
         out.close()
 
-    def generateXco(self, memory):
-        out = open(os.path.join(gen_path, ipcore_path, "%s_brom" % memory.name, "%s_brom.xco" % memory.name), 'w' )
-        for line in self.xco_template:
-            if '%%%NAME%%%' in line:
-                line = string.replace(line, '%%%NAME%%%', memory.name + "_brom")
-            elif '%%%COE%%%' in line:
-                line = string.replace(line, '%%%COE%%%', memory.name + '.coe')
-            elif '%%%SIZE%%%' in line:
-                line = string.replace(line, '%%%SIZE%%%', str(memory.size))
-            elif '%%%DATA_SIZE%%%' in line:
-                line = string.replace(line, '%%%DATA_SIZE%%%', str(memory.data_size))
-            print >> out, line,
-        out.close()
-        self.designer.add_file(ipcore_path, "%s_brom/%s_brom.xco" % (memory.name, memory.name))
+    def generateXco(self, designer):
+        keys={ 'NAME': self.name + "_brom",
+               'COE': self.name + '.coe',
+               'SIZE': str(self.size),
+               'DATA_SIZE': str(self.data_size),
+              }
+        self.xco_template.set_keys(keys)
+        self.xco_template.generate(os.path.join(gen_path, ipcore_path, "%s_brom" % self.name, "%s_brom.xco" % self.name))
+        designer.add_file(ipcore_path, "%s_brom/%s_brom.xco" % (self.name, self.name))
 
-    def generateWrapper(self, wrapper):
-        out = open(os.path.join(gen_path, 'vhdl', "%s.vhdl" % wrapper.name), 'w' )
-        for line in self.wrapper_template:
-            if '%%%WRAPPER_NAME%%%' in line:
-                line = string.replace(line, '%%%WRAPPER_NAME%%%', wrapper.name)
-            elif '%%%BROM_NAME%%%' in line:
-                line = string.replace(line, '%%%BROM_NAME%%%', wrapper.name + '_brom')
-            elif '%%%ADDR_LEN%%%' in line:
-                addr_width = int(math.ceil(math.log(wrapper.size, 2)))
-                line = string.replace(line, '%%%ADDR_LEN%%%', str(int(addr_width)))
-            elif '%%%DATA_SIZE%%%' in line:
-                line = string.replace(line, '%%%DATA_SIZE%%%', str(wrapper.data_size))
-            print >> out, line,
-        out.close()
-        self.designer.add_file(gen_path, "%s.vhdl" % wrapper.name)
-
-    def generate(self, wrapper):
-        mkdir_safe(os.path.join(gen_path, ipcore_path, "%s_brom" % wrapper.name))
-        self.generateCoe(wrapper)
-        self.generateXco(wrapper)
-        self.generateWrapper(wrapper)
+    def generate(self, designer):
+        mkdir_safe(os.path.join(gen_path, ipcore_path, "%s_brom" % self.name))
+        self.generateCoe()
+        self.generateXco(designer)
         return self.latency
 
 class BramMemory(Memory):
@@ -122,23 +99,21 @@ class BramMemory(Memory):
                 ]
 
     def generateXco(self):
-        out = open(os.path.join(gen_path, ipcore_path, "%s_bram" % self.name, "%s_bram.xco" % self.name), 'w' )
-        for line in self.xco_template:
-            if '%%%NAME%%%' in line:
-                line = string.replace(line, '%%%NAME%%%', self.name + "_bram")
-            elif '%%%SIZE%%%' in line:
-                if self.internal:
-                    line = string.replace(line, '%%%SIZE%%%', str(int(math.ceil(self.size/4.0)))) #TODO: Assume 32 bits item in 128 bits mem
-                else:
-                    line = string.replace(line, '%%%SIZE%%%', str(self.size))
-            print >> out, line,
-        out.close()
+        if self.internal:
+            size = str(int(math.ceil(self.size/4.0))) #TODO: Assume 32 bits item in 128 bits mem
+        else:
+            size = str(self.size)
+        keys={ 'NAME': self.name + "_bram",
+               'SIZE': size,
+               }
+        self.xco_template.set_keys(keys)
+        self.xco_template.generate(os.path.join(gen_path, ipcore_path, "%s_bram" % self.name, "%s_bram.xco" % self.name))
 
     def generate(self, designer):
         if self.internal:
-            self.xco_template = load_template('bram.xco')
+            self.xco_template = FileTemplate('bram.xco')
         else:
-            self.xco_template = load_template('bram_32.xco')
+            self.xco_template = FileTemplate('bram.xco')
         mkdir_safe(os.path.join(gen_path, ipcore_path, "%s_bram" % self.name))
         self.generateXco()
         designer.add_file(ipcore_path, "%s_bram/%s_bram.xco" % (self.name, self.name))

@@ -3,35 +3,26 @@ import os
 
 from .common import load_template
 from .config import gen_path
+from .template import FileTemplate
 
 bram_latency = 3
 
 class InternalBramWrapperGenerator:
     latency = 1
-    def __init__(self, designer, debug):
-        self.designer = designer
+    def __init__(self, debug):
         self.debug = debug
         self.wrapper_template = None
-
-    def generateWrapper(self, wrapper):
+    def generate(self, wrapper, designer):
         if not self.wrapper_template:
-            self.wrapper_template = load_template('int_bram_get_wrapper.vhdl')
-        out = open(os.path.join(gen_path, 'vhdl', "%s.vhdl" % wrapper.name), 'w' )
-        for line in self.wrapper_template:
-            if '%%%WRAPPER_NAME%%%' in line:
-                line = string.replace(line, '%%%WRAPPER_NAME%%%', wrapper.name)
-            elif '%%%BROM_NAME%%%' in line:
-                line = string.replace(line, '%%%BROM_NAME%%%', wrapper.mem_name + '_brom')
-            elif '%%%ADDR_LEN%%%' in line:
-                line = string.replace(line, '%%%ADDR_LEN%%%', str(wrapper.address_size))
-            elif '%%%DATA_SIZE%%%' in line:
-                line = string.replace(line, '%%%DATA_SIZE%%%', str(wrapper.data_size))
-            print >> out, line,
-        out.close()
-        self.designer.add_file(gen_path, "%s.vhdl" % wrapper.name)
-
-    def generate(self, wrapper):
-        self.generateWrapper(wrapper)
+            self.wrapper_template = FileTemplate('int_bram_get_wrapper.vhdl')
+        keys={ 'WRAPPER_NAME': wrapper.name,
+               'BROM_NAME': wrapper.mem_name + '_brom',
+               'ADDR_LEN': str(wrapper.address_size),
+               'DATA_SIZE': str(wrapper.data_size),
+              }
+        self.wrapper_template.set_keys(keys)
+        self.wrapper_template.generate(os.path.join(gen_path, 'vhdl', "%s.vhdl" % wrapper.name))
+        designer.add_file(gen_path, "%s.vhdl" % wrapper.name)
         return self.latency
 
 class ExternalBramWrapperGenerator:
