@@ -165,7 +165,7 @@ class FunctionParser(c_ast.NodeVisitor):
         if self._current_function:
             #We are in a function definition
             return
-        if node.type.declname in self.function_templates:
+        if node.type.declname in self.registry.function_templates:
             #function already registered, maybe as Array
             return
         if self.debug: print "Detected function declaration %s" % node.type.declname
