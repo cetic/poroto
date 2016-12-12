@@ -25,6 +25,18 @@ endif
 
 CONFIG+=--sdk $(SDK) --platform-vendor $(PLATFORM_VENDOR) --platform $(PLATFORM) --target $(PLATFORM_TARGET) --device-vendor $(DEVICE_VENDOR) --device $(DEVICE) --design-tool $(DESIGNER) --design-version $(DESIGNER_VERSION)
 
+ifneq ($(DEVICE_FAMILY),)
+	PARAMS+=--device-family $(DEVICE_FAMILY)
+endif
+
+ifneq ($(PACKAGE),)
+	PARAMS+=--package $(PACKAGE)
+endif
+
+ifneq ($(SPEEDGRADE),)
+	PARAMS+=--speed-grade $(SPEEDGRADE)
+endif
+
 ifneq ($(TEST),)
 	PARAMS+=--tb $(TEST)
 endif

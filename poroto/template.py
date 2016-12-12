@@ -2,13 +2,16 @@ import string
 from poroto.common import load_template
 
 class FileTemplate:
+    platform = None
     def __init__(self, template_file):
         self.template_file = template_file
-        self.map = {}
+        self.clear_keys()
         self.template = load_template(self.template_file)
 
     def clear_keys(self):
         self.map = {}
+        if self.platform:
+            self.map.update(self.platform.get_keys())
 
     def set_keys(self, keys):
         self.map.update(keys)
@@ -24,6 +27,10 @@ class FileTemplate:
                             print >> out, item
                         continue
                     else:
-                        line = string.replace(line, tag, value)
+                        try:
+                            line = string.replace(line, tag, str(value))
+                        except TypeError:
+                            print "Tag '%s' has not a string value '%s'" % (tag, value)
+                            raise Exception("Invalid tag value")
             print >> out, line,
         out.close()

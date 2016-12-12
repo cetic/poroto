@@ -101,19 +101,22 @@ class BramMemory(Memory):
     def generateXco(self):
         if self.internal:
             size = str(int(math.ceil(self.size/4.0))) #TODO: Assume 32 bits item in 128 bits mem
+            data_size=128
+            byte_we="true"
         else:
             size = str(self.size)
+            data_size=32
+            byte_we="false"
         keys={ 'NAME': self.name + "_bram",
                'SIZE': size,
+               'DATA_SIZE': data_size,
+               'BYTE_WE': byte_we,
                }
         self.xco_template.set_keys(keys)
         self.xco_template.generate(os.path.join(gen_path, ipcore_path, "%s_bram" % self.name, "%s_bram.xco" % self.name))
 
     def generate(self, designer):
-        if self.internal:
-            self.xco_template = FileTemplate('bram.xco')
-        else:
-            self.xco_template = FileTemplate('bram.xco')
+        self.xco_template = FileTemplate('bram.xco')
         mkdir_safe(os.path.join(gen_path, ipcore_path, "%s_bram" % self.name))
         self.generateXco()
         designer.add_file(ipcore_path, "%s_bram/%s_bram.xco" % (self.name, self.name))

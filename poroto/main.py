@@ -11,6 +11,7 @@ import config
 from common import mkdir_safe
 from pycparser import parse_file, c_generator
 from modules import FunctionsRegistry
+from template import FileTemplate
 from simplifier import CompoundSimplifier
 from registers import RegisterMap
 from pragma import PragmaRegistry, ParsePorotoPragma
@@ -23,6 +24,7 @@ from function import FunctionParser, FunctionInstance
 from roccc.roccc import ROCCC
 import roccc.config
 import re
+from poroto.xilinx import XilinxPlatform
 
 class Poroto:
     def __init__(self, test_vectors_file=None, debug=False):
@@ -87,6 +89,7 @@ class Poroto:
         self.pragma_registry.add_pragma_type('array', ArrayPragmaHandler(self.debug))
         array.init(self.platform, self.converter, self.functions, self.mems_map, self.streams_map)
         IPInstance.converter = self.converter
+        FileTemplate.platform = self.platform
 
     def parse(self, in_file, createAST=True):
         ast = parse_file(in_file, use_cpp=True, cpp_path='gcc', cpp_args=['-E', '-I' + roccc.config.roccc_root])
@@ -209,6 +212,7 @@ def main():
     parser.add_argument('--unisim', dest='unisim', action='store_true', default=False,
                        help='Use unisim simulation library')
     roccc.roccc.ROCCC.register_arguments(parser)
+    XilinxPlatform.register_arguments(parser)
 
     args = parser.parse_args()
 
@@ -225,6 +229,7 @@ def main():
     config.duplicate_functions=args.duplicate
     config.use_unisim=args.unisim
     roccc.roccc.ROCCC.parse_arguments(args)
+    XilinxPlatform.parse_arguments(args)
     
     poroto=Poroto(debug=args.debug, test_vectors_file=args.test_vectors_file)
     print "Parsing files..."

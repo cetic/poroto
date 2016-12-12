@@ -17,3 +17,6 @@ class Platform:
 
     def add_intrinsic(self, designer, intrinsic):
         raise Exception("Method not implemented")
+
+    def get_keys(self):
+        return {}
