@@ -28,8 +28,8 @@ class BromMemory(Memory):
     def generateXco(self, designer):
         keys={ 'NAME': self.name + "_brom",
                'COE': self.name + '.coe',
-               'SIZE': str(self.size),
-               'DATA_SIZE': str(self.data_size),
+               'SIZE': self.size,
+               'DATA_SIZE': self.data_size,
               }
         self.xco_template.set_keys(keys)
         self.xco_template.generate(os.path.join(gen_path, ipcore_path, "%s_brom" % self.name, "%s_brom.xco" % self.name))
@@ -100,7 +100,7 @@ class BramMemory(Memory):
 
     def generateXco(self):
         if self.internal:
-            size = str(int(math.ceil(self.size/4.0))) #TODO: Assume 32 bits item in 128 bits mem
+            size = int(math.ceil(self.size/4.0)) #TODO: Assume 32 bits item in 128 bits mem
             data_size=128
             byte_we="true"
         else:

@@ -57,9 +57,9 @@ class BromMemory(Memory):
                 value = value.value
             data.append("\t  std_logic_vector(to_unsigned(%s, 32))%s" % (value, ',' if i < len(self.init.exprs) - 1 else ''))
         keys={ 'NAME': self.name + "_brom",
-               'SIZE': str(self.size),
-               'ADDR_LEN': str(get_bit_width(self.size)),
-               'DATA_SIZE': str(self.data_size),
+               'SIZE': self.size,
+               'ADDR_LEN': get_bit_width(self.size),
+               'DATA_SIZE': self.data_size,
                'DATA': data}
         self.template.set_keys(keys)
         self.template.generate(os.path.join(gen_path, 'vhdl', "%s_brom.vhdl" % self.name))
