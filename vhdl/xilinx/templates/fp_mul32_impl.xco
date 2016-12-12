@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version 14.7
-# Date: Thu Sep 22 09:06:00 2016
+# Date: Thu Sep 22 08:10:08 2016
 #
 ##############################################################
 #
@@ -22,16 +22,16 @@ SET asysymbol = true
 SET busformat = BusFormatAngleBracketNotRippeda
 SET createndf = false
 SET designentry = VHDL
-SET device = xc6vlx240t
-SET devicefamily = virtex6
+SET device = %%%DEVICE%%%
+SET devicefamily = %%%DEVICE_FAMILY%%%
 SET flowvendor = Other
 SET formalverification = false
 SET foundationsym = false
 SET implementationfiletype = Ngc
-SET package = ff1759
+SET package = %%%PACKAGE%%%
 SET removerpms = false
 SET simulationfiles = Behavioral
-SET speedgrade = -1
+SET speedgrade = %%%SPEEDGRADE%%%
 SET verilogsim = false
 SET vhdlsim = true
 # END Project Options
@@ -53,20 +53,20 @@ CSET c_has_overflow=false
 CSET c_has_rdy=true
 CSET c_has_sclr=true
 CSET c_has_underflow=false
-CSET c_latency=28
-CSET c_mult_usage=No_Usage
+CSET c_latency=8
+CSET c_mult_usage=Full_Usage
 CSET c_optimization=Speed_Optimized
 CSET c_rate=1
 CSET c_result_exponent_width=8
 CSET c_result_fraction_width=24
 CSET c_speed=Maximum_speed
-CSET component_name=fp_div32_impl
+CSET component_name=fp_mul32_impl
 CSET maximum_latency=true
-CSET operation_type=Divide
+CSET operation_type=Multiply
 CSET result_precision_type=Single
 # END Parameters
 # BEGIN Extra information
 MISC pkg_timestamp=2012-07-02T11:22:24Z
 # END Extra information
 GENERATE
-# CRC: 38d379e9
+# CRC:  bc6dc2f

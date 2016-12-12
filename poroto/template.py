@@ -1,5 +1,6 @@
 import string
-from poroto.common import load_template
+from poroto.common import load_template, mkdir_safe
+import os
 
 class FileTemplate:
     platform = None
@@ -16,7 +17,13 @@ class FileTemplate:
     def set_keys(self, keys):
         self.map.update(keys)
 
-    def generate(self, out_file_name):
+    def generate(self, *klist):
+        if len(klist) > 1:
+            out_file_name = os.path.join(*klist)
+        else:
+            out_file_name = klist[0]
+        print out_file_name
+        mkdir_safe(os.path.dirname(out_file_name))
         out = open(out_file_name, 'w' )
         for line in self.template:
             for (key, value) in self.map.iteritems():

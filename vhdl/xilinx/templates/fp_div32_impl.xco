@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version 14.7
-# Date: Thu Sep 22 09:23:23 2016
+# Date: Thu Sep 22 09:06:00 2016
 #
 ##############################################################
 #
@@ -19,19 +19,19 @@
 # BEGIN Project Options
 SET addpads = false
 SET asysymbol = true
-SET busformat = BusFormatAngleBracketNotRipped
+SET busformat = BusFormatAngleBracketNotRippeda
 SET createndf = false
 SET designentry = VHDL
-SET device = xc6vlx240t
-SET devicefamily = virtex6
+SET device = %%%DEVICE%%%
+SET devicefamily = %%%DEVICE_FAMILY%%%
 SET flowvendor = Other
 SET formalverification = false
 SET foundationsym = false
 SET implementationfiletype = Ngc
-SET package = ff1759
+SET package = %%%PACKAGE%%%
 SET removerpms = false
 SET simulationfiles = Behavioral
-SET speedgrade = -1
+SET speedgrade = %%%SPEEDGRADE%%%
 SET verilogsim = false
 SET vhdlsim = true
 # END Project Options
@@ -40,7 +40,7 @@ SELECT Floating-point xilinx.com:ip:floating_point:5.0
 # END Select
 # BEGIN Parameters
 CSET a_precision_type=Single
-CSET add_sub_value=Subtract
+CSET add_sub_value=Both
 CSET c_a_exponent_width=8
 CSET c_a_fraction_width=24
 CSET c_compare_operation=Programmable
@@ -53,20 +53,20 @@ CSET c_has_overflow=false
 CSET c_has_rdy=true
 CSET c_has_sclr=true
 CSET c_has_underflow=false
-CSET c_latency=11
-CSET c_mult_usage=Full_Usage
+CSET c_latency=28
+CSET c_mult_usage=No_Usage
 CSET c_optimization=Speed_Optimized
 CSET c_rate=1
 CSET c_result_exponent_width=8
 CSET c_result_fraction_width=24
 CSET c_speed=Maximum_speed
-CSET component_name=fp_sub32_impl
+CSET component_name=fp_div32_impl
 CSET maximum_latency=true
-CSET operation_type=Add_Subtract
+CSET operation_type=Divide
 CSET result_precision_type=Single
 # END Parameters
 # BEGIN Extra information
 MISC pkg_timestamp=2012-07-02T11:22:24Z
 # END Extra information
 GENERATE
-# CRC: 73879843
+# CRC: 38d379e9

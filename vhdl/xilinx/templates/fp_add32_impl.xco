@@ -13,10 +13,10 @@
 #
 ##############################################################
 # BEGIN Project Options
-SET devicefamily=virtex6
-SET device=xc6vlx240t
-SET package=ff1759
-SET speedgrade=-1
+SET devicefamily=%%%DEVICE_FAMILY%%%
+SET device=%%%DEVICE%%%
+SET package=%%%PACKAGE%%%
+SET speedgrade=%%%SPEEDGRADE%%%
 SET verilogsim=false
 SET vhdlsim=true
 # END Project Options

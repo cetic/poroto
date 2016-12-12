@@ -1,6 +1,7 @@
 from poroto.platform import Platform
 from poroto.common import load_template, mkdir_safe
 from poroto.config import gen_path, src_path, ipcore_path
+from poroto.template import FileTemplate
 from poroto import roccc, config
 
 from .bram import BramMemory, BromMemory
@@ -45,6 +46,7 @@ class XilinxPlatform(Platform):
         return Fifo(self.debug)
 
     def add_intrinsic(self, designer, intrinsic):
+        FileTemplate(intrinsic + "_impl.xco").generate(gen_path, ipcore_path, intrinsic + "_impl", intrinsic + "_impl.xco")
         designer.add_file(src_path, "%s.vhdl" % intrinsic)
         designer.add_file(ipcore_path, "%s_impl/%s_impl.xco" % (intrinsic, intrinsic))
 
