@@ -22,7 +22,6 @@ class FileTemplate:
             out_file_name = os.path.join(*klist)
         else:
             out_file_name = klist[0]
-        print out_file_name
         mkdir_safe(os.path.dirname(out_file_name))
         out = open(out_file_name, 'w' )
         for line in self.template:

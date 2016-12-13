@@ -10,6 +10,8 @@ from .streams import RocccBramInStream, RocccBramOutStream, BramStream, BramGetS
 from .bram_wrapper import BramMemoryWrapper
 from ..port import Port
 from ..config import platform_vendor
+from ..config import gen_path
+from ..template import FileTemplate
 
 class RiffaSDK(SDK):
     def __init__(self, platform, designer, functions, registers_map, mems_map, streams_map, test_vectors, debug):
@@ -38,7 +40,6 @@ class RiffaSDK(SDK):
         designer.add_file(src_path, "riffa_bram.vhdl")
         designer.add_file(src_path, "riffa_bram_fifo.vhdl")
         if platform_vendor == "xilinx":
-            print "Add IP CORE"
             designer.add_file(ipcore_path, "appli_clk_mmcm/appli_clk_mmcm.xco")
             designer.add_file(ipcore_path, "v6_pcie_v2_5/v6_pcie_v2_5.xco")
         registers_map.set_register_size(1)
@@ -58,6 +59,7 @@ class RiffaSDK(SDK):
             raise Exception("Memory type '%s' not supported", mem_type)
 
     def generate_wrappers(self):
+        FileTemplate( "appli_clk_mmcm.xco").generate(gen_path, ipcore_path, "appli_clk_mmcm", "appli_clk_mmcm.xco")
         self.c_wrapper.generate()
         self.vhdl_wrapper.generate()
         if self.vhdl_tb_generator:

@@ -1,7 +1,7 @@
 #define SOFTENING 1e-9f
 
 #pragma poroto file src sqrt.vhdl
-#pragma poroto file ipcore_dir sqrt_impl/sqrt_impl.xco
+#pragma poroto template ipcore_dir sqrt_impl.xco
 #pragma poroto latency 28
 void sqrt(float a, float &result);
 

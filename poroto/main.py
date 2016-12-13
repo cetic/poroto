@@ -17,7 +17,7 @@ from registers import RegisterMap
 from pragma import PragmaRegistry, ParsePorotoPragma
 from memory import MemoryMap, MemoryPragmaHandler
 from stream import StreamMap, StreamPragmaHandler
-from ip import IPInstance, FilePragmaHandler, LatencyPragmaHandler
+from ip import IPInstance, FilePragmaHandler, TemplatePragmaHandler, LatencyPragmaHandler
 import array
 from array import ArrayPragmaHandler
 from function import FunctionParser, FunctionInstance
@@ -82,7 +82,8 @@ class Poroto:
             self.sdk = RiffaSDK(self.platform, self.designer, self.functions.functions, self.registers_map, self.mems_map, self.streams_map, self.test_vectors, self.debug)
         else:
             raise Exception("Unknown sdk '%s'" % config.sdk)
-        self.pragma_registry.add_pragma_type('file', FilePragmaHandler(self.designer, self.debug))
+        self.pragma_registry.add_pragma_type('file', FilePragmaHandler(self.debug))
+        self.pragma_registry.add_pragma_type('template', TemplatePragmaHandler(self.debug))
         self.pragma_registry.add_pragma_type('memory', MemoryPragmaHandler(self.functions, self.mems_map, self.sdk, self.debug))
         self.pragma_registry.add_pragma_type('stream', StreamPragmaHandler(self.streams_map, self.debug))
         self.pragma_registry.add_pragma_type('latency', LatencyPragmaHandler(self.debug))
