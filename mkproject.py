@@ -17,11 +17,22 @@ from poroto.ghdl import Ghdl
 
 designer = None
 
+def copytree(src, dst):
+    names = os.listdir(src)
+    mkdir_safe(dst)
+    for name in names:
+        srcname = os.path.join(src, name)
+        dstname = os.path.join(dst, name)
+        if os.path.isdir(srcname):
+            copytree(srcname, dstname)
+        else:
+            shutil.copy(srcname, dstname)
+
 def tree_copy(project_name, level_path, src_path, dest_path):
     src_full_path = os.path.join(level_path, src_path)
     if os.path.exists(src_full_path):
         print "Copy", src_full_path
-        shutil.copytree(src_full_path, os.path.join(project_name, dest_path))
+        copytree(src_full_path, os.path.join(project_name, dest_path))
 
 def dir_copy(project_name, level_path, src_path, dest_path):
     src_full_path = os.path.join(level_path, src_path)
