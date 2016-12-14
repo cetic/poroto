@@ -46,7 +46,7 @@ class BramMemory(Memory):
 class BromMemory(Memory):
     def __init__(self, name, data_type, size, init, debug):
         Memory.__init__(self, name, data_type, size, init, debug)
-        self.brom_template = FileTemplate('brom.vhdl')
+        self.template = FileTemplate('brom.vhdl')
 
     def generate(self, designer):
         data=[]

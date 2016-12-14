@@ -29,9 +29,9 @@ class FileTemplate:
                 tag = "%%%" + key + "%%%" 
                 if tag in line:
                     if isinstance(value, list):
+                        line = ""
                         for item in value:
                             print >> out, item
-                        continue
                     else:
                         try:
                             line = string.replace(line, tag, str(value))
