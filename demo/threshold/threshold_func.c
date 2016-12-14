@@ -1,16 +1,16 @@
 #pragma poroto memory input_mem int 16984
 #pragma poroto memory output_mem int 16984
 
-#pragma poroto stream::roccc_bram_in threshold::input_image(input_mem, N*N, ROCCC_int9)
-#pragma poroto stream::roccc_bram_out threshold::output_image(output_mem, N*N, ROCCC_int9)
+#pragma poroto stream::roccc_bram_in threshold::input_image(input_mem, N*N, ROCCC_uint8)
+#pragma poroto stream::roccc_bram_out threshold::output_image(output_mem, N*N, ROCCC_uint8)
 
-typedef int ROCCC_int9;
+typedef unsigned int ROCCC_uint8;
 
-void threshold(int N, ROCCC_int9 **input_image, ROCCC_int9 threshold_v, ROCCC_int9 **output_image)
+void threshold(int N, ROCCC_uint8 **input_image, ROCCC_uint8 threshold_v, ROCCC_uint8 **output_image)
 {
   int c;
   int r;
-  ROCCC_int9 aux;
+  ROCCC_uint8 aux;
 
   for (r = 0; r < N; r++) {
     for (c = 0; c < N; c++) {
