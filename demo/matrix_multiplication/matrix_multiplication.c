@@ -6,7 +6,7 @@
 #pragma poroto stream::roccc_bram_in MatrixMultiplication::B(test_B, width_A_height_B*width_B)
 #pragma poroto stream::roccc_bram_out MatrixMultiplication::C(test_C, height_A*width_B)
 
-void MatrixMultiplication(int** A, int** B, int height_A, int width_A_height_B, int width_B, int** C)
+void MatrixMultiplication(int height_A, int width_A_height_B, int width_B, int A[][width_A_height_B], int B[][width_B], int C[][width_B])
 {
   int i;
   int j;

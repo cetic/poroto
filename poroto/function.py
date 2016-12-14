@@ -3,6 +3,7 @@ from .transform.visitor import AstModifier
 from .ip import IPTemplate
 from pycparser import c_ast
 from copy import deepcopy
+from poroto.transform.attributes import get_extra_attr
 
 function_instance_generator = None
 
@@ -107,6 +108,7 @@ class FunctionInstance(Instance):
         self.name = self.code.decl.name
         self.args = self.code.decl.type.args
         self.decl = self.code.decl
+        self.orig_decl = get_extra_attr(template.code.decl, 'orig_decl', self.decl)
         for arg in self.args.params:
             self.params[arg.name] = arg
         v = InlineFunctionCall(functions, self.debug)

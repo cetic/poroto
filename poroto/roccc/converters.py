@@ -110,7 +110,6 @@ class FunctionSimplifier(AstModifier):
                         it = None
             func_decl.type = c_ast.TypeDecl(node.name, [], c_ast.IdentifierType(['void']))
             result_type=deepcopy(return_type)
-            result_type.show()
             result_type.type.names += '&'
             decl = create_simple_var(result_type, 'return_of_the_jedi', None)
             if func_decl.args is None:
@@ -156,6 +155,26 @@ class FunctionSimplifier(AstModifier):
                 reference_type.type.poroto_type = return_type
                 return_value.poroto_type = types.PointerDescriptor(reference_type, None, None)
 
+class FunctionSignatureSimplifier(AstModifier):
+    def __init__(self, debug):
+        AstModifier.__init__(self, debug)
+    def visit_Decl(self, node):
+        if not isinstance(node.type, c_ast.FuncDecl): return
+        func_decl = node.type
+        set_extra_attr(node, 'orig_decl', deepcopy(node.type))
+        for arg in func_decl.args.params:
+            if isinstance(arg.type, c_ast.ArrayDecl):
+                depth = 0
+                inner_type = arg.type
+                while isinstance(inner_type, c_ast.ArrayDecl):
+                    depth += 1
+                    inner_type = inner_type.type
+                new_type=inner_type
+                while depth > 0:
+                    new_type=c_ast.PtrDecl([], new_type, arg.type.coord)
+                    depth -= 1
+                arg.type=new_type
+
 class InstanciateInlineVar(AstModifier):
     def __init__(self, debug):
         AstModifier.__init__(self, debug)
@@ -171,4 +190,4 @@ class InstanciateInlineVar(AstModifier):
             self.inline[node.name] = node.init
         self.generic_visit(node)
 
-converters=[InitConverter, LogicalOpConverter, InterLoopCode, FunctionSimplifier, InstanciateInlineVar]
+converters=[InitConverter, LogicalOpConverter, InterLoopCode, FunctionSimplifier, FunctionSignatureSimplifier, InstanciateInlineVar]

@@ -54,11 +54,11 @@ class CWrapper:
     def wrapFunction(self, instance):
         if self.debug: print "Adding C wrapper for function %s" % instance.name
         generator = c_generator.CGenerator()
-        print >> self.header, "extern", generator.visit(instance.decl), ';'
+        print >> self.header, "extern", generator.visit(instance.orig_decl), ';'
         for stream in instance.streams:
             for line in stream.get_c_decl():
                 print >> self.code, line
-        print >> self.code, generator.visit(instance.decl)
+        print >> self.code, generator.visit(instance.orig_decl)
         print >> self.code, '{'
         for stream in instance.streams:
             print >> self.code, "\tuint32_t %s_size = %s;" % (stream.name, stream.size)
