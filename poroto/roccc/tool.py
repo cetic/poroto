@@ -207,19 +207,3 @@ def add_signals(instance, signals):
     dest.close()
     source.close()
     os.rename("gen/vhdl/%s_tmp.vhdl" % instance.name, "gen/vhdl/%s.vhdl" % instance.name)
-
-if __name__ == '__main__':
-    roccc_root=os.environ["ROCCC_ROOT"]
-    name = sys.argv[1]
-    filename = sys.argv[2]
-    type = sys.argv[3]
-    if type == 'system':
-        options = ['MultiplyByConstElimination',
-                        'DivisionByConstElimination']
-    else:
-        options = ['MultiplyByConstElimination',
-                        'DivisionByConstElimination',
-                        'Export',
-                        'FullyUnroll']
-    print "Generating %s %s (%s)" % (type, name, filename)
-    invoke_roccc(name, '.', filename, options)
