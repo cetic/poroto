@@ -4,6 +4,7 @@ set -e
 
 MODULE=$1
 FILE=$2
+KEEP_TEMP=$3
 
 CWD=`pwd`
 
@@ -57,7 +58,9 @@ $ROCCC_ROOT/tmp/compile_suif2hicirrf.sh $ROCCC_ROOT
 popd
 
 #  - Remove the script
-#rm -f $ROCCC_ROOT/tmp/compile_suif2hicirrf.sh
+if [ "$KEEP_TEMP" != "1" ]; then
+  rm -f $ROCCC_ROOT/tmp/compile_suif2hicirrf.sh
+fi
 
 
 # Now compile to VHDL (this used to be done with compile_llvmtovhdl.sh and consists of the following steps)
@@ -97,7 +100,9 @@ $ROCCC_ROOT/bin/opt \
   -f -o /dev/null hi_cirrf.c.bc
 popd
 
-rm -f $DIR/hi_cirrf* $DIR/roccc.h
+if [ "$KEEP_TEMP" != "1" ]; then
+  rm -f $DIR/hi_cirrf* $DIR/roccc.h
+fi
 mv -f $DIR/*.suif $DIR/.ROCCC/
 
 #Remove obsolete files or files we provide our own version

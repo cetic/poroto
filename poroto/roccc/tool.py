@@ -9,6 +9,7 @@ import re
 import sys
 
 from ..common import root_path
+from ..config import keep_temp
 from . import config
 
 from db import add_module, update_module, get_roccc_version
@@ -62,7 +63,7 @@ def invoke_roccc(name, path, filename, options, lo_options, timing_options):
     print "Options:", options
     print "Low Options:", lo_options
     print "Timing Options:", timing_options
-    subprocess.call("%s %s %s" % (os.path.join(root_path, 'scripts/roccc.sh'), name, filename), shell=True)
+    subprocess.call("%s %s %s %d" % (os.path.join(root_path, 'scripts/roccc.sh'), name, filename, keep_temp), shell=True)
         
 def fix_module(instance):
     os.rename("gen/vhdl/%s.vhdl" % instance.name, "gen/vhdl/%s_orig.vhdl" % instance.name)
@@ -91,6 +92,8 @@ end process;
     source.close()
     dest.close()
     os.rename("gen/vhdl/%s_tmp.vhdl" % instance.name, "gen/vhdl/%s.vhdl" % instance.name)
+    if not keep_temp:
+        os.remove("gen/vhdl/%s_orig.vhdl" % instance.name)
 
 microfifo_component="""component MicroFifo is
 generic (
@@ -157,6 +160,8 @@ def fix_controllers(instance):
     dest_file = open("gen/vhdl/%s_OutputController.vhdl"% instance.name, 'w')
     dest_file.writelines(source)
     dest_file.close()
+    if not keep_temp:
+        os.remove("gen/vhdl/%s_OutputController_orig.vhdl" % instance.name)
 
     os.rename("gen/vhdl/%s_InputController.vhdl" % instance.name, "gen/vhdl/%s_InputController_orig.vhdl" % instance.name)
     source_file = open("gen/vhdl/%s_InputController_orig.vhdl" % instance.name, 'r')
@@ -167,6 +172,8 @@ def fix_controllers(instance):
     dest_file = open("gen/vhdl/%s_InputController.vhdl"% instance.name, 'w')
     dest_file.writelines(source)
     dest_file.close()
+    if not keep_temp:
+        os.remove("gen/vhdl/%s_InputController_orig.vhdl" % instance.name)
 
 def add_signals(instance, signals):
     source = open("gen/vhdl/%s.vhdl" % instance.name, 'r')

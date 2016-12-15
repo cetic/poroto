@@ -92,52 +92,38 @@ class Poroto:
         IPInstance.converter = self.converter
         FileTemplate.platform = self.platform
 
-    def parse(self, in_file, createAST=True):
+    def parse(self, in_file):
         ast = parse_file(in_file, use_cpp=True, cpp_path='gcc', cpp_args=['-E', '-I' + roccc.config.roccc_root])
-        if createAST: ast.show()
-        self.ast_list.append((in_file, ast))
+        self.ast_list.append(ast)
         
-    def convert(self, createAST=True):
+    def convert(self):
         for validator in self.converter.first_pass_validators():
-            for (in_file, ast) in self.ast_list:
+            for ast in self.ast_list:
                 a = validator(self.debug)
                 a.visit(ast)
-        for (in_file, ast) in self.ast_list:
+        for ast in self.ast_list:
             a = ParsePorotoPragma(self.pragma_registry, self.debug)
             a.visit(ast)
-        for (in_file, ast) in self.ast_list:
+        for ast in self.ast_list:
             a = CompoundSimplifier()
             a.visit(ast)
         for converter in array.converters:
-            for (in_file, ast) in self.ast_list:
+            for ast in self.ast_list:
                 a = converter(self.debug)
                 a.visit(ast)
         for converter in self.converter.converters():
-            for (in_file, ast) in self.ast_list:
+            for ast in self.ast_list:
                 a = converter(self.debug)
                 a.visit(ast)
         for validator in self.converter.second_pass_validators():
-            for (in_file, ast) in self.ast_list:
+            for ast in self.ast_list:
                 a = validator(self.debug)
                 a.visit(ast)
-        for (in_file, ast) in self.ast_list:
+        for ast in self.ast_list:
             a=FunctionParser(self.functions, self.platform, self.debug)
             a.visit(ast)
         self.streams_map.consolidate()
         self.functions.consolidate()
-        for (in_file, ast) in self.ast_list:
-            if createAST: ast.show()
-            if config.create_converted:
-                m = re.match( r'(.*)\.(.*)', os.path.basename(in_file))
-                if m is None:
-                    out_file = in_file + '-poroto.c'
-                else:
-                    out_file = m.group(1)+'-poroto.'+m.group(2)
-                generator = c_generator.CGenerator()
-                generated = generator.visit(ast)
-                out = open(os.path.join(config.gen_path, out_file), 'w' )
-                print >> out, generated
-                out.close()
 
     def definePorts(self):
         for instance in self.functions.functions:
@@ -186,8 +172,6 @@ def main():
                        help='Header to add')
     parser.add_argument('--debug', dest='debug', action='store_true',
                        help='Print debug information')
-    parser.add_argument('--create-ast', dest='createAST', action='store_true',
-                       help='Create AST files')
     parser.add_argument('--keep-temp', dest='keep_temp', action='store_true',
                        help='Keep temporary files')
     parser.add_argument('--duplicate', dest='duplicate', action='store_true', default=False,
@@ -217,7 +201,7 @@ def main():
 
     args = parser.parse_args()
 
-    config.create_converted=args.keep_temp
+    config.keep_temp=args.keep_temp
     config.sdk=args.sdk
     config.platform_vendor=args.platform_vendor
     config.platform=args.platform
@@ -235,9 +219,9 @@ def main():
     poroto=Poroto(debug=args.debug, test_vectors_file=args.test_vectors_file)
     print "Parsing files..."
     for source_file in args.source_files:
-        poroto.parse(source_file, createAST=args.createAST)
+        poroto.parse(source_file)
     print "Convert code..."
-    poroto.convert(createAST=args.createAST)
+    poroto.convert()
     print "Map streams, ports and memories..."
     poroto.definePorts()
     poroto.defineMmap()

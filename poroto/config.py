@@ -13,7 +13,7 @@ c_tb_path='c_tb'
 user_signals = {}
 address_size = {}
 
-create_converted = True
+keep_temp = True
 c_header=None
 validate_converted=True
 duplicate_functions=False

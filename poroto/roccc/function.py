@@ -1,6 +1,6 @@
 from ..function import FunctionInstance
 from ..transform.attributes import get_extra_attr, set_extra_attr
-from ..config import src_path, gen_path, c_header, user_signals, create_fifo, create_stream, create_converted, validate_converted
+from ..config import src_path, gen_path, c_header, user_signals, create_fifo, create_stream, keep_temp, validate_converted
 from pycparser import c_ast, c_generator
 import config
 import tool
@@ -157,5 +157,5 @@ class RocccFunctionInstance(FunctionInstance):
         filename = os.path.join(gen_path, "%s.c" % self.name)
         if validate_converted:
             subprocess.call("g++ -I. -I$ROCCC_ROOT/LocalFiles -c %s -o /dev/null" % filename, shell=True)
-        if not create_converted:
+        if not keep_temp:
             os.unlink(filename)
