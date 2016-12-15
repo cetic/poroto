@@ -44,6 +44,8 @@ class InterLoopCode(AstModifier):
             self.begin = False
         inner_for=None
         for stmt in node.stmt.block_items:
+            if isinstance(stmt, c_ast.Label):
+                stmt = stmt.stmt
             if isinstance(stmt, c_ast.For):
                 inner_for=stmt
         if inner_for:
